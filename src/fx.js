@@ -1,13 +1,13 @@
 //     Zepto.js
-//     (c) 2010-2012 Thomas Fuchs
+//     (c) 2010, 2011 Thomas Fuchs
 //     Zepto.js may be freely distributed under the MIT license.
 
 (function($, undefined){
   var prefix = '', eventPrefix, endEventName, endAnimationName,
     vendors = {Webkit: 'webkit', Moz: '', O: 'o', ms: 'MS'},
     document = window.document, testEl = document.createElement('div'),
-    supportedTransforms = /^((translate|rotate|scale)(X|Y|Z|3d)?|matrix(3d)?|perspective|skew(X|Y)?)$/i,
-    animationShouldStop = false;
+    supportedTransforms = /^((translate|rotate|scale)(X|Y|Z|3d)?|matrix(3d)?|perspective|skew(X|Y)?)$/i;
+    cachedAnimation = {};
 
   function downcase(str) { return str.toLowerCase() }
   function normalizeEvent(name) { return eventPrefix ? eventPrefix + name : downcase(name) };
@@ -33,6 +33,10 @@
     if (duration) duration = duration / 1000;
     return this.anim(properties, duration, ease, callback);
   };
+  
+  $.fn.stop = function(){
+    this.one(cachedAnimation.endEvent, cachedAnimation.callback);
+  }
 
   $.fn.anim = function(properties, duration, ease, callback){
     var transforms, cssProperties = {}, key, that = this, wrappedCallback, endEvent = $.fx.transitionEnd;
@@ -57,17 +61,15 @@
       if (!$.fx.off) cssProperties[prefix + 'transition'] = 'all ' + duration + 's ' + (ease || '');
     }
 
-    $.fn.stop = function(){
-      animationShouldStop = true;
-    }
-
     wrappedCallback = function(){
       var props = {};
       props[prefix + 'transition'] = props[prefix + 'animation-name'] = 'none';
       $(this).css(props);
       callback && callback.call(this);
     }
-    if (duration > 0) this.one(endEvent, wrappedCallback);
+    cachedAnimation.endEvent = endEvent;
+    cachedAnimation.callback = callback;
+    if (duration > 0) this.one(cachedAnimation.endEvent, cachedAnimation.callback);
 
     setTimeout(function() {
       that.css(cssProperties);

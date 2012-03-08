@@ -1,5 +1,5 @@
 //     Zepto.js
-//     (c) 2010-2012 Thomas Fuchs
+//     (c) 2010, 2011 Thomas Fuchs
 //     Zepto.js may be freely distributed under the MIT license.
 
 (function($, undefined){
@@ -21,11 +21,7 @@
     }
     return el.anim(props, translateSpeed(speed) / 1000, null, callback);
   }
-
-  function stop(){
-    $.fx.stop();
-  }
-
+  
   function hide(el, speed, scale, callback) {
     return anim(el, speed, 0, scale, function(){
       origHide.call($(this));
