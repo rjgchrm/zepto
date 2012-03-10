@@ -35,7 +35,10 @@
   };
   
   $.fn.stop = function(){
-    this.one(cachedAnimation.endEvent, cachedAnimation.callback);
+    if(cachedAnimation.callback && cachedAnimation.endEvent){
+      this.one(cachedAnimation.endEvent, cachedAnimation.callback);
+    }
+    cachedAnimation = {};
   }
 
   $.fn.anim = function(properties, duration, ease, callback){
